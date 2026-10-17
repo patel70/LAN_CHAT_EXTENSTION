@@ -1,0 +1,174 @@
+{
+  "name": "lan-code-chat",
+  "displayName": "LAN Code Chat",
+  "description": "Chat and swap code snippets with everyone else on your LAN, right inside VS Code. Zero servers, zero accounts — just your office Wi-Fi.",
+  "version": "0.1.0",
+  "publisher": "local-dev",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "chat",
+    "lan",
+    "collaboration",
+    "snippets",
+    "pair programming"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "lanCodeChat",
+          "title": "LAN Code Chat",
+          "icon": "media/activitybar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "lanCodeChat": [
+        {
+          "id": "lanCodeChat.peers",
+          "name": "Nearby Peers"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "lanCodeChat.openChat",
+        "title": "LAN Code Chat: Open Chat Room",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "lanCodeChat.shareSelection",
+        "title": "LAN Code Chat: Share Selection to Chat",
+        "icon": "$(export)"
+      },
+      {
+        "command": "lanCodeChat.shareFile",
+        "title": "LAN Code Chat: Share Current File to Chat",
+        "icon": "$(file-code)"
+      },
+      {
+        "command": "lanCodeChat.setUsername",
+        "title": "LAN Code Chat: Set Display Name"
+      },
+      {
+        "command": "lanCodeChat.setRoom",
+        "title": "LAN Code Chat: Set Room Passphrase"
+      },
+      {
+        "command": "lanCodeChat.refreshPeers",
+        "title": "LAN Code Chat: Refresh Peers",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "lanCodeChat.sendDirectMessage",
+        "title": "LAN Code Chat: Direct Message Peer",
+        "icon": "$(comment)"
+      },
+      {
+        "command": "lanCodeChat.copyPeerAddress",
+        "title": "LAN Code Chat: Copy Peer Address",
+        "icon": "$(copy)"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "lanCodeChat.shareSelection",
+          "group": "9_cutcopypaste",
+          "when": "editorHasSelection"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "lanCodeChat.openChat",
+          "when": "view == lanCodeChat.peers",
+          "group": "navigation"
+        },
+        {
+          "command": "lanCodeChat.refreshPeers",
+          "when": "view == lanCodeChat.peers",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "lanCodeChat.sendDirectMessage",
+          "when": "view == lanCodeChat.peers && viewItem == peer",
+          "group": "inline"
+        },
+        {
+          "command": "lanCodeChat.copyPeerAddress",
+          "when": "view == lanCodeChat.peers && viewItem == peer"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "LAN Code Chat",
+      "properties": {
+        "lanCodeChat.username": {
+          "type": "string",
+          "default": "",
+          "description": "Display name shown to others on the LAN. Leave blank to use your OS username."
+        },
+        "lanCodeChat.room": {
+          "type": "string",
+          "default": "general",
+          "description": "Room passphrase. Only peers using the exact same passphrase can read your messages — everyone else on the LAN sees you as 'offline/locked'. Change this to create a private room."
+        },
+        "lanCodeChat.discoveryPort": {
+          "type": "number",
+          "default": 54545,
+          "description": "UDP port used to broadcast/listen for presence announcements on the LAN."
+        },
+        "lanCodeChat.wsPortRangeStart": {
+          "type": "number",
+          "default": 54560,
+          "description": "First port tried when opening this machine's chat listening socket (auto-increments if busy)."
+        },
+        "lanCodeChat.announceIntervalMs": {
+          "type": "number",
+          "default": 3000,
+          "description": "How often (ms) to broadcast a presence announcement."
+        },
+        "lanCodeChat.peerTimeoutMs": {
+          "type": "number",
+          "default": 12000,
+          "description": "Mark a peer offline if no announcement is heard for this many ms."
+        },
+        "lanCodeChat.notifyOnMessage": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a VS Code notification when a chat message arrives while the chat panel isn't focused."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/uuid": "^9.0.8",
+    "@types/vscode": "^1.80.0",
+    "@types/ws": "^8.5.10",
+    "@vscode/vsce": "^4.0.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1",
+    "ws": "^8.16.0"
+  }
+}
